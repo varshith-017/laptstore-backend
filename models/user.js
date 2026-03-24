@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
   username: String,
   email: String,
   password: String,
-  wishlist: [String]
+  wishlist: [ { type: mongoose.Schema.Types.ObjectId, ref: "Product" } ]
 });
 
 module.exports = mongoose.model("User", userSchema);
