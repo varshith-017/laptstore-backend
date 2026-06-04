@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const User = require("../models/User");
+const Product = require("../models/Product");
 
 // ADD
 router.post("/add", async (req, res) => {
@@ -12,13 +13,19 @@ router.post("/add", async (req, res) => {
   }
 
   await user.save();
+
   res.json(user.wishlist);
 });
 
 // GET
 router.get("/:userId", async (req, res) => {
   const user = await User.findById(req.params.userId);
-  res.json(user.wishlist || []);
+
+  const products = await Product.find({
+    _id: { $in: user.wishlist }
+  });
+
+  res.json(products);
 });
 
 // REMOVE
@@ -26,7 +33,10 @@ router.post("/remove", async (req, res) => {
   const { userId, productId } = req.body;
 
   const user = await User.findById(userId);
-  user.wishlist = user.wishlist.filter(id => id !== productId);
+
+  user.wishlist = user.wishlist.filter(
+    (id) => id.toString() !== productId
+  );
 
   await user.save();
 
